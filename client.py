@@ -13,15 +13,19 @@ import sys
 SERVER = sys.argv[1]
 PORT = int(sys.argv[2])
 # Contenido que vamos a enviar
-LINE = sys.argv[3]
+#LINE = sys.argv[3]
+#peticion SIP del cliente
+REGISTER = sys.argv[3].upper()
+#usuario
+USER = sys.argv[4] 
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 my_socket.connect((SERVER, PORT))
 
-print("Enviando: " + LINE)
-my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
+print("Enviando: " + REGISTER + ' ' + USER)   
+my_socket.send(bytes(REGISTER + ' ' + USER + ' ', 'utf-8') + b'SIP/2.0\r\n')
 data = my_socket.recv(1024)
 
 print('Recibido -- ', data.decode('utf-8'))
