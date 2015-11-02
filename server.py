@@ -14,9 +14,10 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
-    
-    Dicc={}
+    Dicc = {}
+
     def handle(self):
+
         line = self.rfile.read()
         linea = line.decode('utf_8')
         ip = self.client_address[0]
@@ -32,23 +33,27 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             print("El cliente nos manda " + line.decode('utf-8'))
             if registro == "REGISTER":
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                self.Dicc[direccionSIP]= [ip, time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + expires))]
+                self.Dicc[direccionSIP] = [ip, time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + expires))]
             if expires == 0:
                 del self.Dicc[direccionSIP]
             # Si no hay más líneas salimos del bucle infinito
             if not line or len(linea):
                 break
-            if tiempo == time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + expires)):
-                del self.Dicc[direccionSIP]
-        print(self.Dicc)
+            #retirar los usuarios que ya han excedido su tiempo de expiracion
+            caducados = []
+            for usuario in self.Dicc:
+                if tiempo >= time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + expires)):
+                    caducados.append(usuario)
+            for usuario in caducados:
+                del self.Dicc[usuario]
+            print(self.Dicc)
         self.register2json()
-         
-      
+
     def register2json(self):
         fich = open('register.json', 'w')
         json.dump(self.Dicc, fich, sort_keys=True, indent=4, separators=(',', ':'))
         fich.close()
-  
+
     def json2registered(self):
         """
         Comprobar la existencia del fichero json
