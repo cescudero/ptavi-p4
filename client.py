@@ -30,8 +30,8 @@ my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 my_socket.connect((SERVER, PORT))
 
 if REGISTER == 'REGISTER':
-    EXPIRES = ("Expires: " + EXPIRES + '\r\n\r\n') 
-    print("Enviando: " + REGISTER + ' ' + USER + '\r\n' + EXPIRES) 
+    EXPIRES = ("Expires: " + EXPIRES + '\r\n\r\n')
+    print("Enviando: " + REGISTER + ' ' + USER + '\r\n' + EXPIRES)
     my_socket.send(bytes(REGISTER + ' ' + USER + ' ', 'utf-8') + b'SIP/2.0\r\n' + bytes(EXPIRES, 'utf-8'))
     data = my_socket.recv(1024)
 
